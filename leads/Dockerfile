@@ -13,6 +13,8 @@ RUN chown -R appuser:appuser /app
 
 USER appuser
 
+EXPOSE 8001
+
 ENV DB_HOST=
 ENV DB_PORT=
 ENV DB_NAME=
