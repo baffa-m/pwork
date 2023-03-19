@@ -2,8 +2,9 @@ from fastapi import FastAPI, Depends, Response
 from sqlalchemy import create_engine, Column, Integer, DateTime, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from pydantic import BaseModel
+from pydantic import BaseModel, BaseSettings, validator
 from datetime import datetime, timedelta
+from typing import Any
 import requests
 import io
 import base64
@@ -16,9 +17,31 @@ from matplotlib.figure import Figure
 # Create a SQLAlchemy engine for the MySQL database
 #engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
-SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:toor@172.17.0.2:3306/leads-db"
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+class Settings(BaseSettings):
+    DB_HOST: str
+    DB_PORT: str
+    DB_PASSWORD: str
+    DB_NAME: str
+    DB_USER: str
+    DB_URL: str = ""
+    
+    
+    @validator("DB_URL")
+    def validate_db(cls, v: str, values: dict[str, Any]) -> str:
+        return f"mysql+pymysql://{values['DB_USER']}:{values['DB_PASSWORD']}@{values['DB_HOST']}:{values['DB_PORT']}/{values['DB_NAME']}"
+    
+    
+    
+    class Config:
+        env_file = ".env"
+    
+settings = Settings()
+
+
+#SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:toor@172.17.0.2:3306/leads-db"
+
+engine = create_engine(settings.DB_URL)
 
 # Create a Session class for interacting with the database
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

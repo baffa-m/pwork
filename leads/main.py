@@ -1,11 +1,14 @@
 from fastapi import FastAPI
 import requests
 import json
-from typing import List
-from pydantic import BaseModel
+from typing import List, Any
+from pydantic import BaseModel, BaseSettings, validator
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+import os
+from dotenv import load_dotenv
+
 
 app = FastAPI()
 
@@ -29,8 +32,31 @@ class LeadModel(Base):
     phone_work = Column(String(255))
     first_name = Column(String(255))
     last_name = Column(String(255))
+ 
+ 
+class Settings(BaseSettings):
+    DB_HOST: str
+    DB_PORT: str
+    DB_PASSWORD: str
+    DB_NAME: str
+    DB_USER: str
+    DB_URL: str = ""
+    
+    
+    @validator("DB_URL")
+    def validate_db(cls, v: str, values: dict[str, Any]) -> str:
+        return f"mysql+pymysql://{values['DB_USER']}:{values['DB_PASSWORD']}@{values['DB_HOST']}:{values['DB_PORT']}/{values['DB_NAME']}"
+    
+    
+    
+    class Config:
+        env_file = ".env"
+    
+settings = Settings()
+      
 
-SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:toor@172.17.0.2:3306/leads-db"
+
+SQLALCHEMY_DATABASE_URL = settings.DB_URL
 
 #SQLALCHEMY_DATABASE_URL = "sqlite:///./leads.db"
 

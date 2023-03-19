@@ -11,6 +11,12 @@ RUN chown -R appuser:appuser /app
 
 USER appuser
 
+ENV DB_HOST=
+ENV DB_PORT=
+ENV DB_NAME=
+ENV DB_USER=
+ENV DB_PASSWORD=
+
 COPY . .
 
 CMD ["uvicorn", "bitcoin:app", "--host", "0.0.0.0", "--port", "8000"]
