@@ -112,7 +112,7 @@ app = FastAPI()
 
 @app.get("/price")
 async def get_price():
-    latest_price = db.query(Price).filter(Price.id).first()
+    latest_price = db.query(Price).order_by(Price.id.desc()).first()
     if latest_price:
         return latest_price
     else:

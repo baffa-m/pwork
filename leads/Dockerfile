@@ -10,6 +10,7 @@ RUN apk update && apk add
 RUN pip install --upgrade --upgrade pip
 RUN pip install -r requirements.txt
 RUN chown -R appuser:appuser /app
+RUN pip install cryptography
 
 USER appuser
 

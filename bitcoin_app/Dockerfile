@@ -8,6 +8,8 @@ RUN pip install -r requirements.txt
 RUN pip install python-multipart
 RUN useradd --create-home appuser
 RUN chown -R appuser:appuser /app
+RUN pip install cryptography
+
 
 USER appuser
 
